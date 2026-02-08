@@ -345,6 +345,14 @@
             transition: background 0.3s ease;
         }
 
+        .grid-table .day-name {
+            background: var(--green-light);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: background 0.3s ease;
+        }
+
         .grid-table .day-number {
             background: var(--green-light);
             font-size: 12px;
@@ -1434,6 +1442,13 @@
                 }
             }
 
+            // NEW: Get day name from date
+            getDayName(day) {
+                const date = new Date(this.year, this.month, day);
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                return dayNames[date.getDay()];
+            }
+
             renderHabitsList() {
                 const container = document.getElementById('habitsList');
                 
@@ -1619,12 +1634,14 @@
                 thead.innerHTML = '';
                 tbody.innerHTML = '';
 
-                // Create header rows
+                // Create header rows - NOW WITH 3 ROWS
                 const weekRow = document.createElement('tr');
+                const dayNameRow = document.createElement('tr');
                 const dayRow = document.createElement('tr');
 
                 // First column for habit names
                 weekRow.innerHTML = '<th class="habit-name">Habits</th>';
+                dayNameRow.innerHTML = '<th class="habit-name"></th>';
                 dayRow.innerHTML = '<th class="habit-name"></th>';
 
                 // Group days by week
@@ -1646,14 +1663,18 @@
                     }
 
                     weekDays.push(day);
-                    const isTodayClass = (isCurrentMonth && day === todayDate) ? ' class="day-number today"' : ' class="day-number"';
-                    dayRow.innerHTML += `<th${isTodayClass}>${day}</th>`;
+                    const isTodayClass = (isCurrentMonth && day === todayDate) ? ' today' : '';
+                    const dayName = this.getDayName(day);
+                    
+                    dayNameRow.innerHTML += `<th class="day-name${isTodayClass}">${dayName}</th>`;
+                    dayRow.innerHTML += `<th class="day-number${isTodayClass}">${day}</th>`;
                 }
 
                 // Add last week header
                 weekRow.innerHTML += `<th colspan="${weekDays.length}" class="week-header">Week ${currentWeek}</th>`;
                 
                 thead.appendChild(weekRow);
+                thead.appendChild(dayNameRow);
                 thead.appendChild(dayRow);
 
                 // Create habit rows with streak badges
